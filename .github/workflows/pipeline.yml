@@ -1,10 +1,11 @@
+%%writefile .github/workflows/pipeline.yml
 name: Tourism Project Pipeline
 
 on:
   push:
     branches:
-      - main  # Automatically triggers on push to the main branch
-  workflow_dispatch:  # lets you click "Run workflow" in the Actions tab
+      - main
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -21,7 +22,7 @@ jobs:
       - name: Install Dependencies
         run: pip install -r tourism_project/requirements.txt
       - name: Register Dataset
-        run:  python tourism_project/model_building/data_register.py
+        run: python tourism_project/model_building/data_register.py
       - name: Upload Registered Dataset
         uses: actions/upload-artifact@v4
         with:
@@ -51,7 +52,7 @@ jobs:
             tourism_project/data/ytest.csv
             tourism_project/deployment/encoders.joblib
 
-  model-traning:
+  model-training:
     needs: data-prep
     runs-on: ubuntu-latest
     steps:
@@ -65,16 +66,35 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: data-splits
+          path: artifact
+      - name: Restore Generated Files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p tourism_project/data tourism_project/deployment
+          for file in Xtrain.csv Xtest.csv ytrain.csv ytest.csv; do
+            source=$(find artifact -type f -name "$file" -print -quit)
+            test -n "$source"
+            cp "$source" "tourism_project/data/$file"
+          done
+          encoder=$(find artifact -type f -name encoders.joblib -print -quit)
+          test -n "$encoder"
+          cp "$encoder" tourism_project/deployment/encoders.joblib
+          test -f tourism_project/deployment/encoders.joblib
       - name: Start MLflow Server
         run: |
-          nohup mlflow ui --host 0.0.0.0 --port 5000 &  # Run MLflow UI in the background
-          sleep 5  # Wait for a moment to let the server starts
+          nohup mlflow ui --host 0.0.0.0 --port 5000 &
+          sleep 5
       - name: Model Building
         run: python tourism_project/model_building/train.py
-      - name: Commit Trained Model
+      - name: Commit Trained Model and Encoders
+        shell: bash
         run: |
+          set -euo pipefail
+          test -f tourism_project/deployment/model.joblib
+          test -f tourism_project/deployment/encoders.joblib
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add tourism_project/deployment/model.joblib tourism_project/deployment/encoders.joblib   # path to the saved model file
-          git commit -m "Add trained model [skip ci]" || echo "No changes to commit"
+          git add -f tourism_project/deployment/model.joblib tourism_project/deployment/encoders.joblib
+          git diff --cached --quiet || git commit -m "Add trained model [skip ci]"
           git push
