@@ -1,78 +1,266 @@
-import os
+
+from pathlib import Path
+
 import joblib
 import pandas as pd
 import streamlit as st
 
-APP_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(APP_DIR, "model.joblib")
-ENCODERS_PATH = os.path.join(APP_DIR, "encoders.joblib")
+
+# ============================================================
+# LOAD MODEL
+# ============================================================
+
+MODEL_PATH = Path(__file__).resolve().parent / "tourism_model.pkl"
 
 model = joblib.load(MODEL_PATH)
-encoders = joblib.load(ENCODERS_PATH)
 
-st.title("Wellness Tourism Package Prediction")
-st.write(
-    "Enter customer and interaction details to predict whether they are "
-    "likely to purchase the Wellness Tourism Package."
+
+# ============================================================
+# PAGE CONFIG
+# ============================================================
+
+st.set_page_config(
+    page_title="Tourism Package Prediction",
+    page_icon="🏨",
+    layout="wide"
 )
 
-st.header("Customer Details")
-age = st.number_input("Age", min_value=18, max_value=100, value=35)
-type_of_contact = st.selectbox("Type of Contact", encoders["TypeofContact"].classes_)
-city_tier = st.selectbox("City Tier", [1, 2, 3])
-occupation = st.selectbox("Occupation", encoders["Occupation"].classes_)
-gender = st.selectbox("Gender", encoders["Gender"].classes_)
-num_persons_visiting = st.number_input("Number of Persons Visiting", min_value=1, max_value=10, value=2)
-preferred_property_star = st.selectbox("Preferred Property Star", [3, 4, 5])
-marital_status = st.selectbox("Marital Status", encoders["MaritalStatus"].classes_)
-num_trips = st.number_input("Number of Trips (per year)", min_value=0, max_value=20, value=2)
-passport = st.selectbox("Holds Passport", ["No", "Yes"])
-own_car = st.selectbox("Owns Car", ["No", "Yes"])
-num_children_visiting = st.number_input("Number of Children Visiting", min_value=0, max_value=5, value=0)
-designation = st.selectbox("Designation", encoders["Designation"].classes_)
-monthly_income = st.number_input("Monthly Income", min_value=0, value=20000)
+st.title("🏨 Tourism Package Prediction")
 
-st.header("Customer Interaction Data")
-pitch_satisfaction_score = st.slider("Pitch Satisfaction Score", min_value=1, max_value=5, value=3)
-product_pitched = st.selectbox("Product Pitched", encoders["ProductPitched"].classes_)
-num_followups = st.number_input("Number of Followups", min_value=0, max_value=10, value=3)
-duration_of_pitch = st.number_input("Duration of Pitch (minutes)", min_value=0, max_value=180, value=15)
+st.write(
+    "Enter customer details to predict whether the customer "
+    "is likely to purchase the tourism package."
+)
 
-if st.button("Predict"):
-    raw_input = {
-        "Age": age,
-        "TypeofContact": type_of_contact,
-        "CityTier": city_tier,
-        "Occupation": occupation,
-        "Gender": gender,
-        "NumberOfPersonVisiting": num_persons_visiting,
-        "PreferredPropertyStar": preferred_property_star,
-        "MaritalStatus": marital_status,
-        "NumberOfTrips": num_trips,
-        "Passport": 1 if passport == "Yes" else 0,
-        "OwnCar": 1 if own_car == "Yes" else 0,
-        "NumberOfChildrenVisiting": num_children_visiting,
-        "Designation": designation,
-        "MonthlyIncome": monthly_income,
-        "PitchSatisfactionScore": pitch_satisfaction_score,
-        "ProductPitched": product_pitched,
-        "NumberOfFollowups": num_followups,
-        "DurationOfPitch": duration_of_pitch,
-    }
-    input_df = pd.DataFrame([raw_input])
 
-    # Apply the same label encoding used during training
-    for col, encoder in encoders.items():
-        if col in input_df.columns:
-            input_df[col] = encoder.transform(input_df[col].astype(str))
+# ============================================================
+# USER INPUTS
+# ============================================================
 
-    # Match the exact column order the model was trained on
-    input_df = input_df.reindex(columns=model.feature_names_in_)
+col1, col2 = st.columns(2)
 
-    prediction = model.predict(input_df)[0]
-    probability = model.predict_proba(input_df)[0][1]
+
+with col1:
+
+    age = st.number_input(
+        "Age",
+        min_value=18,
+        max_value=100,
+        value=35
+    )
+
+    typeofcontact = st.selectbox(
+        "Type of Contact",
+        ["Self Enquiry", "Company Invited"]
+    )
+
+    citytier = st.selectbox(
+        "City Tier",
+        [1, 2, 3]
+    )
+
+    durationofpitch = st.number_input(
+        "Duration of Pitch",
+        min_value=0,
+        value=10
+    )
+
+    occupation = st.selectbox(
+        "Occupation",
+        [
+            "Salaried",
+            "Small Business",
+            "Large Business",
+            "Free Lancer"
+        ]
+    )
+
+    gender = st.selectbox(
+        "Gender",
+        ["Male", "Female"]
+    )
+
+    numberofpersonvisiting = st.number_input(
+        "Number of Persons Visiting",
+        min_value=1,
+        value=2
+    )
+
+    numberoffollowups = st.number_input(
+        "Number of Followups",
+        min_value=0,
+        value=3
+    )
+
+    productpitched = st.selectbox(
+        "Product Pitched",
+        [
+            "Basic",
+            "Deluxe",
+            "Standard",
+            "Super Deluxe",
+            "King"
+        ]
+    )
+
+
+with col2:
+
+    preferredpropertystar = st.selectbox(
+        "Preferred Property Star",
+        [3, 4, 5]
+    )
+
+    maritalstatus = st.selectbox(
+        "Marital Status",
+        [
+            "Single",
+            "Married",
+            "Divorced"
+        ]
+    )
+
+    numberoftrips = st.number_input(
+        "Number of Trips",
+        min_value=0,
+        value=2
+    )
+
+    passport = st.selectbox(
+        "Passport",
+        [0, 1]
+    )
+
+    pitchsatisfactionscore = st.selectbox(
+        "Pitch Satisfaction Score",
+        [1, 2, 3, 4, 5]
+    )
+
+    owncar = st.selectbox(
+        "Own Car",
+        [0, 1]
+    )
+
+    numberofchildrenvisiting = st.number_input(
+        "Number of Children Visiting",
+        min_value=0,
+        value=1
+    )
+
+    designation = st.selectbox(
+        "Designation",
+        [
+            "AVP",
+            "VP",
+            "Manager",
+            "Senior Manager",
+            "Executive"
+        ]
+    )
+
+    monthlyincome = st.number_input(
+        "Monthly Income",
+        min_value=0,
+        value=25000
+    )
+
+
+# ============================================================
+# CREATE INPUT DATAFRAME
+# ============================================================
+
+input_data = pd.DataFrame({
+    "Age": [age],
+    "TypeofContact": [typeofcontact],
+    "CityTier": [citytier],
+    "DurationOfPitch": [durationofpitch],
+    "Occupation": [occupation],
+    "Gender": [gender],
+    "NumberOfPersonVisiting": [numberofpersonvisiting],
+    "NumberOfFollowups": [numberoffollowups],
+    "ProductPitched": [productpitched],
+    "PreferredPropertyStar": [preferredpropertystar],
+    "MaritalStatus": [maritalstatus],
+    "NumberOfTrips": [numberoftrips],
+    "Passport": [passport],
+    "PitchSatisfactionScore": [pitchsatisfactionscore],
+    "OwnCar": [owncar],
+    "NumberOfChildrenVisiting": [numberofchildrenvisiting],
+    "Designation": [designation],
+    "MonthlyIncome": [monthlyincome]
+})
+
+
+# ============================================================
+# MATCH MODEL'S EXPECTED COLUMNS
+# ============================================================
+
+# The model remembers the columns used during training.
+expected_columns = model.feature_names_in_
+
+# Add any missing columns with a default value.
+for column in expected_columns:
+    if column not in input_data.columns:
+        if column == "CustomerID":
+            input_data[column] = 0
+        else:
+            input_data[column] = 0
+
+# Keep exactly the columns used during training.
+input_data = input_data[expected_columns]
+
+
+# ============================================================
+# PREDICTION
+# ============================================================
+
+if st.button(
+    "Predict Package Purchase",
+    type="primary"
+):
+
+    prediction = model.predict(input_data)[0]
+
+    st.subheader("Prediction")
 
     if prediction == 1:
-        st.success(f"Likely to purchase the package (confidence: {probability:.1%})")
+
+        st.success(
+            "🎉 Customer is likely to purchase "
+            "the tourism package."
+        )
+
     else:
-        st.info(f"Not likely to purchase the package (confidence: {1 - probability:.1%})")
+
+        st.info(
+            "Customer is unlikely to purchase "
+            "the tourism package."
+        )
+
+
+    # ========================================================
+    # PROBABILITY
+    # ========================================================
+
+    if hasattr(model, "predict_proba"):
+
+        probability = model.predict_proba(
+            input_data
+        )[0][1]
+
+        st.metric(
+            "Purchase Probability",
+            f"{probability:.2%}"
+        )
+
+
+    # ========================================================
+    # CUSTOMER DATA
+    # ========================================================
+
+    st.subheader("Customer Details")
+
+    st.dataframe(
+        input_data,
+        use_container_width=True
+    )
