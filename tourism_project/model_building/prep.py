@@ -1,3 +1,4 @@
+#%%writefile tourism_project/model_building/prep.py
 import os
 import glob
 import pandas as pd
@@ -8,21 +9,16 @@ from sklearn.preprocessing import LabelEncoder
 # CONFIGURATION
 DATA_DIR = "tourism_project/data"
 
-# Ensure you have your GitHub Personal Access Token saved in environment variables
-GITHUB_TOKEN = os.getenv("GH_TOKEN")
-if not GITHUB_TOKEN:
-    raise ValueError("Please set the GITHUB_TOKEN environment variable.")
-
-# Construct the raw URL to pull data from your GitHub repository
-DATASET_URL = f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/main/tourism_project/data/tourism.csv"
+DATA_PATH = DATA_DIR / "tourism.csv"
+OUTPUT_DIR = DATA_DIR / "splits"
 
 def prepare_data():
-    print("Step 1: Loading dataset from GitHub...")
+    print("Step 1: Loading dataset...")
     try:
-        df = pd.read_csv(DATASET_URL)
-        print("Dataset loaded from GitHub successfully.")
+        df = pd.read_csv(DATA_PATH)
+        print("Dataset loaded successfully.")
     except Exception as e:
-        print(f"Failed to load dataset from URL {DATASET_URL}. Error: {e}")
+        print(f"Failed to load dataset from URL {DATA_PATH}. Error: {e}")
         return
 
     print("Step 2: Performing data cleaning...")
@@ -62,10 +58,10 @@ def prepare_data():
     # Save locally
     os.makedirs(DATA_DIR, exist_ok=True)
     paths = {
-        "Xtrain.csv": os.path.join(DATA_DIR, "Xtrain.csv"),
-        "Xtest.csv": os.path.join(DATA_DIR, "Xtest.csv"),
-        "ytrain.csv": os.path.join(DATA_DIR, "ytrain.csv"),
-        "ytest.csv": os.path.join(DATA_DIR, "ytest.csv"),
+        "Xtrain.csv": os.path.join(OUTPUT_DIR, "Xtrain.csv"),
+        "Xtest.csv": os.path.join(OUTPUT_DIR, "Xtest.csv"),
+        "ytrain.csv": os.path.join(OUTPUT_DIR, "ytrain.csv"),
+        "ytest.csv": os.path.join(OUTPUT_DIR, "ytest.csv"),
     }
 
     # Save mapping logic safely without dangerous eval statements
