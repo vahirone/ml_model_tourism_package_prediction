@@ -10,6 +10,12 @@ DATA_DIR = "tourism_project/data"
 DATA_PATH = os.path.join(DATA_DIR, "tourism.csv")
 OUTPUT_DIR = os.path.join(DATA_DIR, "splits")
 
+# Create output directory
+OUTPUT_DIR.mkdir(
+    parents=True,
+    exist_ok=True
+)
+
 def prepare_data():
     print("Step 1: Loading dataset...")
     try:
