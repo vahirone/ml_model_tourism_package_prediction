@@ -10,7 +10,7 @@ import streamlit as st
 # LOAD MODEL
 # ============================================================
 
-MODEL_PATH = Path(__file__).resolve().parent / "tourism_model.pkl"
+MODEL_PATH = Path(__file__).resolve().parent / "model.joblib"
 
 model = joblib.load(MODEL_PATH)
 
