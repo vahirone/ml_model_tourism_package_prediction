@@ -1,16 +1,14 @@
 #%%writefile tourism_project/model_building/prep.py
 import os
-import glob
 import pandas as pd
-from github import Github, GithubException
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
 # CONFIGURATION
 DATA_DIR = "tourism_project/data"
 
-DATA_PATH = DATA_DIR / "tourism.csv"
-OUTPUT_DIR = DATA_DIR / "splits"
+DATA_PATH = os.path.join(DATA_DIR, "tourism.csv")
+OUTPUT_DIR = os.path.join(DATA_DIR, "splits")
 
 def prepare_data():
     print("Step 1: Loading dataset...")
@@ -56,7 +54,7 @@ def prepare_data():
     )
 
     # Save locally
-    os.makedirs(DATA_DIR, exist_ok=True)
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
     paths = {
         "Xtrain.csv": os.path.join(OUTPUT_DIR, "Xtrain.csv"),
         "Xtest.csv": os.path.join(OUTPUT_DIR, "Xtest.csv"),
