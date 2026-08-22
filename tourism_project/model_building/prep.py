@@ -8,15 +8,8 @@ from sklearn.preprocessing import LabelEncoder
 # CONFIGURATION
 DATA_DIR = "tourism_project/data"
 MODEL_DIR = "tourism_project/deployment"
-
 DATA_PATH = os.path.join(DATA_DIR, "tourism.csv")
-OUTPUT_DIR = os.path.join(DATA_DIR, "splits")
 ENCODERS_PATH = os.path.join(MODEL_DIR, "encoders.joblib")
-
-
-# Create output directories
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-os.makedirs(MODEL_DIR, exist_ok=True)
 
 def prepare_data():
     print("Step 1: Loading dataset...")
@@ -47,6 +40,7 @@ def prepare_data():
         encoders[col] = le
         print(f" Encoded column: {col}")
 
+    os.makedirs(MODEL_DIR, exist_ok=True)
     joblib.dump(encoders, ENCODERS_PATH)
     print(f"Encoders saved to {ENCODERS_PATH}")
 
@@ -68,10 +62,10 @@ def prepare_data():
 
     # Save locally
     paths = {
-        "Xtrain.csv": os.path.join(OUTPUT_DIR, "Xtrain.csv"),
-        "Xtest.csv": os.path.join(OUTPUT_DIR, "Xtest.csv"),
-        "ytrain.csv": os.path.join(OUTPUT_DIR, "ytrain.csv"),
-        "ytest.csv": os.path.join(OUTPUT_DIR, "ytest.csv"),
+        "Xtrain.csv": os.path.join(DATA_DIR, "Xtrain.csv"),
+        "Xtest.csv": os.path.join(DATA_DIR, "Xtest.csv"),
+        "ytrain.csv": os.path.join(DATA_DIR, "ytrain.csv"),
+        "ytest.csv": os.path.join(DATA_DIR, "ytest.csv"),
     }
 
     # Save mapping logic safely without dangerous eval statements
