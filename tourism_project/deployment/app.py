@@ -3,7 +3,7 @@ import joblib
 import pandas as pd
 import streamlit as st
 
-APP_DIR = os.path.dirname(os.path.abspath(_file_))
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(APP_DIR, "model.joblib")
 ENCODERS_PATH = os.path.join(APP_DIR, "encoders.joblib")
 
