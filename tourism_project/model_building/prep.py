@@ -10,11 +10,9 @@ DATA_DIR = "tourism_project/data"
 DATA_PATH = os.path.join(DATA_DIR, "tourism.csv")
 OUTPUT_DIR = os.path.join(DATA_DIR, "splits")
 
+
 # Create output directory
-OUTPUT_DIR.mkdir(
-    parents=True,
-    exist_ok=True
-)
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def prepare_data():
     print("Step 1: Loading dataset...")
@@ -60,7 +58,6 @@ def prepare_data():
     )
 
     # Save locally
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
     paths = {
         "Xtrain.csv": os.path.join(OUTPUT_DIR, "Xtrain.csv"),
         "Xtest.csv": os.path.join(OUTPUT_DIR, "Xtest.csv"),
