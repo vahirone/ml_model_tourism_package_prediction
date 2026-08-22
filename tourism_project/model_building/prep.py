@@ -1,17 +1,22 @@
+#%%writefile tourism_project/model_building/prep.py
 import os
+import joblib
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
 # CONFIGURATION
 DATA_DIR = "tourism_project/data"
+MODEL_DIR = "tourism_project/deployment"
 
 DATA_PATH = os.path.join(DATA_DIR, "tourism.csv")
 OUTPUT_DIR = os.path.join(DATA_DIR, "splits")
+ENCODERS_PATH = os.path.join(MODEL_DIR, "encoders.joblib")
 
 
-# Create output directory
+# Create output directories
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(MODEL_DIR, exist_ok=True)
 
 def prepare_data():
     print("Step 1: Loading dataset...")
@@ -35,10 +40,15 @@ def prepare_data():
 
     # Label Encoding for categorical variables
     cat_cols = df.select_dtypes(include=["object"]).columns
-    le = LabelEncoder()
+    encoders = {}
     for col in cat_cols:
+        le = LabelEncoder()
         df[col] = le.fit_transform(df[col].astype(str))
+        encoders[col] = le
         print(f" Encoded column: {col}")
+
+    joblib.dump(encoders, ENCODERS_PATH)
+    print(f"Encoders saved to {ENCODERS_PATH}")
 
     print("Step 3: Splitting into train and test sets...")
     target_col = "ProdTaken"
