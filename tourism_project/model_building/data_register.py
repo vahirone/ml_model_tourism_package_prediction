@@ -2,8 +2,11 @@ from github import Github, GithubException
 import os
 import glob
 
+REPO_OWNER   = "vahirone"                 # Your GitHub username
+REPO_NAME         = "ml_model_tourism_package_prediction"  # Repository name
+COLAB_SECRET_NAME = "GH_TOKEN"                # Name of the secret in Colab
+
 # Configuration
-REPO_OWNER = GITHUB_USERNAME
 FOLDER_PATH = "tourism_project/data"
 
 # Initialize GitHub API client
@@ -37,10 +40,10 @@ for file_path in glob.glob(search_path, recursive=True):
         # Read the file contents as binary to handle all file types safely
         with open(file_path, "rb") as f:
             content = f.read()
-            
+
         # Keep the 'tourism_project/data/' folder structure intact inside the repo
         git_path = os.path.relpath(file_path)
-        
+
         try:
             repo.create_file(
                 path=git_path,
