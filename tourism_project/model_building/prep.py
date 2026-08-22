@@ -6,7 +6,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
 # CONFIGURATION
-REPO_OWNER = GITHUB_USERNAME
 DATA_DIR = "tourism_project/data"
 
 # Ensure you have your GitHub Personal Access Token saved in environment variables
