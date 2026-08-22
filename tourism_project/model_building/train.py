@@ -14,7 +14,7 @@ PROJECT_ROOT = Path("tourism_project")
 
 DATA_DIR = PROJECT_ROOT / "data"
 MODEL_DIR = PROJECT_ROOT / "deployment"
-MODEL_PATH = MODEL_DIR / "model.pkl"
+MODEL_PATH = MODEL_DIR / "model.joblib"
 
 def load_data():
     Xtrain = pd.read_csv(os.path.join(DATA_DIR, "Xtrain.csv"))
