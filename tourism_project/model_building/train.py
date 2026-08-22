@@ -7,16 +7,21 @@ import xgboost as xgb
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report, accuracy_score, f1_score
 
+# CONFIGURATION
+
+DATA_PATH = os.path.join(DATA_DIR, "tourism.csv")
+TRAIN_TEST_DIR = os.path.join(DATA_DIR, "splits")
+
+
 DATA_DIR = "tourism_project/data"
 MODEL_DIR = "tourism_project/deployment"
 MODEL_PATH = os.path.join(MODEL_DIR, "model.joblib")
 
-
 def load_data():
-    Xtrain = pd.read_csv(os.path.join(DATA_DIR, "Xtrain.csv"))
-    Xtest = pd.read_csv(os.path.join(DATA_DIR, "Xtest.csv"))
-    ytrain = pd.read_csv(os.path.join(DATA_DIR, "ytrain.csv")).iloc[:, 0]
-    ytest = pd.read_csv(os.path.join(DATA_DIR, "ytest.csv")).iloc[:, 0]
+    Xtrain = pd.read_csv(os.path.join(TRAIN_TEST_DIR, "Xtrain.csv"))
+    Xtest = pd.read_csv(os.path.join(TRAIN_TEST_DIR, "Xtest.csv"))
+    ytrain = pd.read_csv(os.path.join(TRAIN_TEST_DIR, "ytrain.csv")).iloc[:, 0]
+    ytest = pd.read_csv(os.path.join(TRAIN_TEST_DIR, "ytest.csv")).iloc[:, 0]
     return Xtrain, Xtest, ytrain, ytest
 
 
@@ -81,6 +86,5 @@ def train_model():
 
     print("Training complete.")
 
-
-if __name__ == "_main_":
+if __name__ == "__main__":
     train_model()
