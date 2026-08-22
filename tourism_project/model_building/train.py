@@ -10,12 +10,11 @@ from sklearn.metrics import classification_report, accuracy_score, f1_score
 
 # CONFIGURATION
 
-DATA_PATH = os.path.join(DATA_DIR, "tourism.csv")
-TRAIN_TEST_DIR = os.path.join(DATA_DIR, "splits")
-
-
 DATA_DIR = "tourism_project/data"
 MODEL_DIR = "tourism_project/deployment"
+
+DATA_PATH = os.path.join(DATA_DIR, "tourism.csv")
+TRAIN_TEST_DIR = os.path.join(DATA_DIR, "splits")
 MODEL_PATH = os.path.join(MODEL_DIR, "model.joblib")
 
 def load_data():
