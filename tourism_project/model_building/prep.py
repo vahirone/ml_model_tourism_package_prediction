@@ -1,4 +1,3 @@
-#%%writefile tourism_project/model_building/prep.py
 import os
 import joblib
 import pandas as pd
