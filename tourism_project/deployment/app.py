@@ -1,3 +1,4 @@
+%%writefile tourism_project/deployment/app.py
 from pathlib import Path
 
 import joblib
@@ -154,7 +155,7 @@ if submitted:
 
     with prob_col:
         if hasattr(model, "predict_proba"):
-            probability = model.predict_proba(input_df)[0][1]
+            probability = float(model.predict_proba(input_df)[0][1])
             st.metric("Purchase Probability", f"{probability:.1%}")
             st.progress(min(max(probability, 0.0), 1.0))
 
