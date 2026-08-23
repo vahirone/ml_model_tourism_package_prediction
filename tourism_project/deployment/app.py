@@ -1,4 +1,3 @@
-#%%writefile tourism_project/deployment/app.py
 from pathlib import Path
 
 import joblib
